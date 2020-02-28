@@ -17,7 +17,7 @@
 1. The Note of myself:
 [DisasterResponsePipeline_note](https://github.com/soufal/Udacity_DisasterResponsePipeline/blob/master/DisasterResponsePipeline_note.md)
 
-2. The solution of `juypter notebook`:  
-[ETL Pipeline Preparation-zh.ipynb](https://github.com/soufal/Udacity_DisasterResponsePipeline/blob/master/jupyter_files/ETL%20Pipeline%20Preparation-zh.ipynb)    
+2. The solution of `juypter notebook`:
+    - [ETL Pipeline Preparation-zh.ipynb](https://github.com/soufal/Udacity_DisasterResponsePipeline/blob/master/jupyter_files/ETL%20Pipeline%20Preparation-zh.ipynb)    
 
-[ML Pipeline Preparation-zh.ipynb](https://github.com/soufal/Udacity_DisasterResponsePipeline/blob/master/jupyter_files/ML%20Pipeline%20Preparation-zh.ipynb)
+    - [ML Pipeline Preparation-zh.ipynb](https://github.com/soufal/Udacity_DisasterResponsePipeline/blob/master/jupyter_files/ML%20Pipeline%20Preparation-zh.ipynb)
