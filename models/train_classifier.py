@@ -1,24 +1,101 @@
 import sys
+import pandas as pd
+import numpy as np
+import re
+import pickle
+from sqlalchemy import create_engine
 
+#NLTK libraries
+import nltk
+nltk.download(['punkt', 'wordnet', 'stopwords', 'averaged_perceptron_tagger'])
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import stopwords
+
+
+#skicit-learn libraries
+from sklearn.metrics import classification_report
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.model_selection import train_test_split
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import confusion_matrix
+from sklearn.multioutput import MultiOutputClassifier
+
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 def load_data(database_filepath):
-    pass
+    """
+    从数据库中导出数据。
+    并将其分为X，Y和category_names
+    """
+    engine = create_engine('sqlite:///' + database_filepath)
+    df = pd.read_sql_table('DisasterResponsePipeline_table',engine)
+    X = df['message']
+    Y = df.iloc[:, 4:]
+    category_names = Y.columns
 
+    return X, Y, category_names
 
 def tokenize(text):
-    pass
+    """
+    分词函数。
+    对文本进行处理，分词，并去掉停用词。
+    """
+    # 使用正则表达式清理数据
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
+    tokens = word_tokenize(text)
+    
+    # lemmatizer并去掉停用词
+    lemmatizer = WordNetLemmatizer()
+
+    clean_tokens = []
+    for tok in tokens:
+        if tok not in nltk.corpus.stopwords.words('english'):
+            clean_tok = lemmatizer.lemmatize(tok)
+            clean_tokens.append(clean_tok)
+
+    return clean_tokens
 
 
 def build_model():
-    pass
+
+    """   
+    Description:    
+    Building ML pipline with grid search
+    Arguments:
+    None
+    Returns:
+    cv: Defined model
+    """
+    #创建一个机器学习管道
+    pipeline = Pipeline([
+                    ('vect', CountVectorizer(tokenizer=tokenize)),
+                    ('tfidf', TfidfTransformer()),
+                    ('clf', MultiOutputClassifier(RandomForestClassifier()))
+                ])
+    #设置网格搜索参数
+    parameters = {
+                'vect__ngram_range': ((1, 1), (1, 2)),
+                'clf__estimator__min_samples_split': (2, 4),
+                'tfidf__norm': ['l1', 'l2'],
+                'tfidf__sublinear_tf': [True, False]}
+
+    model = GridSearchCV(pipeline, param_grid=parameters,cv=5, verbose=3, n_jobs=-1)    
+
+    return model
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
-    pass
+    y_preds_test = model.predict(X_test)
+    y_preds_test = pd.DataFrame(data=y_preds_test, columns=Y_test.columns, index=Y_test.index)
+    for col in Y_test.columns:
+        print(classification_report(y_preds_test[col],Y_test[col]))
 
 
 def save_model(model, model_filepath):
-    pass
+    pickle.dump(model, open(model_filepath, 'wb'))
 
 
 def main():
