@@ -12,3 +12,12 @@
     `python run.py`
 
 3. Go to http://0.0.0.0:3001/
+
+### Note:
+1. The Note of myself:
+[DisasterResponsePipeline_note](https://github.com/soufal/Udacity_DisasterResponsePipeline/blob/master/DisasterResponsePipeline_note.md)
+
+2. The solution of `juypter notebook`:
+    - [ETL Pipeline Preparation-zh.ipynb](https://github.com/soufal/Udacity_DisasterResponsePipeline/blob/master/jupyter_files/ETL%20Pipeline%20Preparation-zh.ipynb)    
+
+    - [ML Pipeline Preparation-zh.ipynb](https://github.com/soufal/Udacity_DisasterResponsePipeline/blob/master/jupyter_files/ML%20Pipeline%20Preparation-zh.ipynb)
