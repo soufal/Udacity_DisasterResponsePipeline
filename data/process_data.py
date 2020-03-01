@@ -1,16 +1,70 @@
 import sys
+import pandas as pd
+import numpy as np
+from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
-    pass
+    #load messages dataset
+    messages = pd.read_csv(messages_filepath)
 
+    #load categories dataset
+    categories = pd.read_csv(categories_filepath)
+
+    #merge dataset to the 'df'
+    df = pd.merge(messages, categories, on='id')
+    return df
 
 def clean_data(df):
-    pass
+    """
+    Step 1:
+    """
+    #create a dataframe of the 36 individual category columns
+
+    categories = df['categories'].str.split(";", expand=True)
+
+    # select the first row of the categories dataframe
+    row = categories.iloc[0]
+
+    # use this row to extract a list of new column names for categories.
+    # one way is to apply a lambda function that takes everything 
+    # up to the second to last character of each string with slicing
+    category_colnames = list(map(lambda x: x.split('-')[0], row))
+    # rename the columns of `categories`
+    categories.columns = category_colnames
+
+    for column in categories:
+        # set each value to be the last character of the string
+        #Elements in the split lists can be accessed using get or [] notation
+        categories[column] = categories[column].str.split('-').str[1] 
+        
+        # convert column from string to numeric
+        categories[column] = categories[column].astype("int")
+
+    """
+    Step 2:
+    """
+    # drop the original categories column from `df`
+    df = df.drop(columns='categories', axis=1)
+    # concatenate the original dataframe with the new `categories` dataframe
+    # TODO 11
+    # 在这里进行合并，应该使用join，
+    # 在索引或键列上将列与其他DataFrame连接起来。通过传递一个列表，一次有效地通过索引连接多个DataFrame对象。
+    df = pd.concat([df,categories], axis=1)
+
+    # check number of duplicates
+    if len([i for i in df.duplicated() if i]) > 1:
+        # drop duplicatesss
+        df = df.drop_duplicates(subset=None, keep='first', inplace=False)
+
+    return df
 
 
 def save_data(df, database_filename):
-    pass  
+    #save the data to the database
+    engine = create_engine('sqlite:///' + database_filename)
+
+    df.to_sql('DisasterResponsePipeline_table', engine, index=False)  
 
 
 def main():
