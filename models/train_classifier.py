@@ -27,9 +27,17 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 
 def load_data(database_filepath):
     """
-    从数据库中导出数据。
-    并将其分为X，Y和category_names
+    Description:
+        从数据库中导出数据。
+        并将其分为X，Y和category_names
+    Input:
+        数据库文件名。
+    Output:
+        X：输入特征数据；
+        Y：标签。
+        category_names: 标签名，即类别名。
     """
+
     engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table('DisasterResponsePipeline_table',engine)
     X = df['message']
@@ -40,8 +48,12 @@ def load_data(database_filepath):
 
 def tokenize(text):
     """
-    分词函数。
-    对文本进行处理，分词，并去掉停用词。
+    Description:
+        分词函数。对文本进行处理，分词，并去掉停用词。
+    Input: 
+        需要分词的文本。
+    Output：
+        分词后得到的词列表。
     """
     # 使用正则表达式清理数据
     text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
@@ -60,14 +72,13 @@ def tokenize(text):
 
 
 def build_model():
-
     """   
     Description:    
-    Building ML pipline with grid search
-    Arguments:
-    None
-    Returns:
-    cv: Defined model
+        构建一个基于网格搜索的ML模型。
+    Input:
+        None
+    Output:
+        model: ML模型。
     """
     #创建一个机器学习管道
     pipeline = Pipeline([
@@ -88,6 +99,17 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """   
+    Description:    
+        评估模型的质量。
+    Input:
+        model：ML模型。
+        X_test：测试集特征数据。
+        Y_test：测试集标签。
+        category_names：类别名。
+    Output:
+        输出基于classification_report得到的相关质量评估值。
+    """
     y_preds_test = model.predict(X_test)
     y_preds_test = pd.DataFrame(data=y_preds_test, columns=Y_test.columns, index=Y_test.index)
     for col in Y_test.columns:
@@ -95,6 +117,15 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    """   
+    Description:    
+        将模型保存为pkl文件。
+    Input:
+        model：ML模型。
+        model_filepath：保存的文件名。
+    Output:
+        None。
+    """
     pickle.dump(model, open(model_filepath, 'wb'))
 
 

@@ -5,6 +5,15 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
+    """   
+    Description:    
+        读取csv文件并合并。
+    Input:
+        messages_filepath：信息文件名。
+        categories_filepath：标签分类文件名。
+    Output:
+        合并后的DataFrame。
+    """
     #load messages dataset
     messages = pd.read_csv(messages_filepath)
 
@@ -17,8 +26,14 @@ def load_data(messages_filepath, categories_filepath):
 
 def clean_data(df):
     """
-    Step 1:
+    Description:    
+        清洗数据。
+    Input:
+        df：待清洗的DataFrame。
+    Output:
+        清洗后的DataFrame。
     """
+    # Step 1:
     #create a dataframe of the 36 individual category columns
 
     categories = df['categories'].str.split(";", expand=True)
@@ -61,6 +76,15 @@ def clean_data(df):
 
 
 def save_data(df, database_filename):
+    """
+    Description:    
+        保存DataFrame数据到Sqlite3数据库。
+    Input:
+        df：清洗后的DataFrame。
+        database_filename：数据库文件名。
+    Output:
+        None。
+    """
     #save the data to the database
     engine = create_engine('sqlite:///' + database_filename)
 
